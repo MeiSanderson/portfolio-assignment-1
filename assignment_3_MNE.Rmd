@@ -61,11 +61,11 @@ a)
 
 ```{r thirdPart_Mie_a}
 
-### a) 
-
-
+### a)
 
 ## 1) create 1000 simulations draws of the cost difference and effectiveness difference by making a function
+set.seed(123) # sets the seed for reproducability
+
 
 # declare variables
 costDiff_sim = c()
@@ -111,7 +111,8 @@ data <- data.frame(
 
 # 3) makes simple scatterplot
 plot(data$x_costDiff, data$y_effDiff, xlab="Average recent growth in personal income",
-ylab="Incumbent party's vote share")
+ylab="Incumbent party's vote share", main = "Costs and effectiveness differences between 2 medical treatments",
+pch = 20, col = 'darkblue')
 
 
 
@@ -137,7 +138,7 @@ b)
 
 ```{r thirdPart_Mie_b}
 
-### b) 
+### b)
 
 
 ## 1) the incremental cost-effectiveness ratio is calculated based on the simulations from a)
@@ -166,6 +167,10 @@ relativeSE_eff = effDiff_se/mean(effDiff_sim)
 
 # calculates the se of the estimate
 ratioCostEff_se = ratioCostEff_estimate * sqrt(relativeSE_cost^2+relativeSE_eff^2)
+
+      # multiplication makes the SE appropriately scaled relative to the estimate (ratioCostEff_estimate)
+
+      # AND the sqrt() and ^2 is basically for making sure that the se is not negative
 
 
 
@@ -202,7 +207,7 @@ c)
 
 ```{r thirdPart_Mie_c}
 
-### c) 
+### c)
 
 effDiff_se = 2  # sets the new standard error of the differences in effectiveness
 
@@ -242,21 +247,9 @@ for (i in 1:1000)
 
 
 # creates a dataframe with the cost and effectiveness differences to use for plotting
-data <- data.frame(
-  x_costDiff = costDiff_sim, # the x values are the cost differences
-  y_effDiff = effDiff_sim  # the y values are the effectiveness differences
-)
-
-
-# makes a scatterplot
-ggplot(data, aes(x = x_costDiff)) +
-  geom_point(aes(y = y_effDiff), alpha = 0.6, color = 'red') +  # Plotting the data points
-  labs(
-    x = 'Differences in cost per patient',
-    y = "Differences in effectiveness",
-    title = 'Costs and effectiveness differences between 2 medical treatments',
-  ) +
-  theme_minimal()
+plot(data$x_costDiff, data$y_effDiff, xlab="Average recent growth in personal income",
+ylab="Incumbent party's vote share", main = "Costs and effectiveness differences between 2 medical treatments",
+pch = 20, col = 'darkblue')
 
 
 
@@ -311,8 +304,13 @@ endCI_95 = round( ratioCostEff_estimate + 2 * ratioCostEff_se, 2)
 
 CI_95 = print(paste("the 95% confidence interval is [", startCI_95, ", ", endCI_95, "]"))
 
+print(ratioCostEff_estimate)
 
 
 ```
+
+Conclusion (*written in French*):
+
+  So as the SE of effectiveness differences has doubled (from 1 to 2), the confidence intervals for the incremental cost-effectiveness ratio has also become wider because of it.
 
 
