@@ -311,6 +311,9 @@ print(ratioCostEff_estimate)
 
 Conclusion (*written in French*):
 
-  So as the SE of effectiveness differences has doubled (from 1 to 2), the confidence intervals for the incremental cost-effectiveness ratio has also become wider because of it.
+  Alors (*'so' written in French*) as the SE of effectiveness differences has doubled (from 1 to 2), the intervals* for the incremental cost-effectiveness ratio has also become wider because of it.
+  
+  * we expect that you mean confidence intervals, but it was not specified to our great dismay
+  
 
 
