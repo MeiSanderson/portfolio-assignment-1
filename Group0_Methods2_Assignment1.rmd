@@ -1,62 +1,70 @@
 ---
-title: "Portfolio_1_Group_0"
-author: "Silke"
-date: "2024-03-05"
-output: html_document
+title: "BSc CogSci - 2. Sem - Methods 2 - Assignment 1 - Q2"
+author: "Group 0"
+date: "10-03-2024"
+output:
+  html_document: default
+  pdf_document: default
 ---
+
+## Methods 2 - Assignment 1
+### Group Members: Silke, Aiswarya, Mie, Paula, Benjamin
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
+
+# loading packages
 library(pacman)
 pacman::p_load(tidyverse, ggplot2)
-rm(list=ls())
+
+rm(list = ls())
+
 ``` 
 
+## Question 1: ROS 5.2 Continuous probability simulation **(Silke)**
+The logarithms of weights (in pounds) of men in the United States are approximately normally distributed with mean 5.13 and standard deviation 0.17; women’s log weights are approximately normally distributed with mean 4.96 and standard deviation 0.20. Suppose 10 adults selected at random step on an elevator with a capacity of 1750 pounds. What is the probability that their total weight exceeds this limit?
 
-##Question 1: ROS 5.2 Continuous probability simulation (Silke)
-The logarithms of weights (in pounds) of men in the United States are approximately normally distributed with mean 5.13 and standard deviation 0.17; women’s log weights are approximately normally distributed with mean 4.96 and standard deviation 0.20. Suppose 10 adults selected at random, step on an elevator with a capacity of 1750 pounds. What is the probability that their total weight exceeds this limit?
-
-###Answer: 
+### Answer: 
 There is approximately a 6.8% risk that the total weight of 10 randomly sampled adults exceed the max weight of 1750.
 
 ```{r}
+
 #Ensure simulation is the same each time.
 set.seed(24)
 
 #Simulate weight for 10 people (from a normal distribution for weight and binomial distribution for gender). Run the simulation 1000 times and transform the total weight from log to normal to be able to compare it to the elevator's max capacity.
 simulations <- 1000
-
 sum_weight <- numeric(simulations)
 
 for (s in 1:simulations) {
   N <- 10
-  female <- rbinom(N, 1, 0.49)  #MNE - female = 1, male = 0
+  female <- rbinom(N, 1, 0.49)
   weight <-
-    ifelse(female == 1, rnorm(N, 4.96, 0.20), rnorm(N, 5.13, 0.17)) # MNE - female = 1 aka it's a female then the simulation is rnorm(N, 4.96, 0.20). If female isn't equal to 1, it gives the simulation for men rnorm(N, 5.13, 0.17)
-  
-  sum_weight[s] <- sum(exp(weight)) # MNE - exp() is cause the weight is a log value, so we take exp() to remove that
+    ifelse(female == 1, rnorm(N, 4.96, 0.20), rnorm(N, 5.13, 0.17))
+  sum_weight[s] <- sum(exp(weight))
 }
 
 #Define weight for elevator and calculate the probability of the total weight of the 10 adults simulated above being higher than 1750 pounds.
 elevator <- 1750
-probability <- 1 - pnorm(elevator, mean(sum_weight), sd(sum_weight)) # MNE - pnorm = calculates the probability of something happening under the normal distribution (0-1) - the probability of it being higher than the elevator value given the mean and sd
-
+probability <- 1 - pnorm(elevator, mean(sum_weight), sd(sum_weight))
 probability
+
 ```
 
-## Question 2: ROS 5.6, Propagation of Uncertainty (Aiswarya)
-
-We use a highly idealized setting to illustrate the use of simulations in combining uncertainties. Suppose a company changes its technology for widget production, and a study estimates the cost savings at \$5 per unit, but with a standard error of \$4. Furthermore, a forecast estimates the size of the market (that is, the number of widgets that will be sold) at 40 000, with a standard error of 10 000. Assuming these two sources of uncertainty are independent, use simulation to estimate the total amount of money saved by the new product (that is, savings per unit, multiplied by size of the market).
-
+## Question 2: ROS 5.6, Propagation of Uncertainty **(Aiswarya)**
 ### Breakdown of Process
-To estimate the total amount of money saved by the new product (mean = 5, se = 4), simulations may be used. 
-A simulation count of 1000 is to establish ("n_sims") along with the parameters set out by the problem ([1] "m_unitCost", "se_unitCost"; [2] "m_marketSize", "se_marketSize"). Two independent, normal distributions are created using the two separate sets of parameters, within the confines of a for-loop. Within this same for-loop, a calculation of the estimated total amount of money saved ("savings_CostxSize") may be carried out. Finally, the results of the simulations may be viewed. With consideration of the fact that there are 1000 simulations, the head() function may be used to view an extract of the results for the sake of convenience. 
-An alternate version of the calculations carried out without the use of a for-loop may be viewed within the appendix.
+**To estimate the total amount of money saved by the new product (mean = 5, se = 4), simulations may be used.** 
+A simulation count of 1000 is established ("n_sims") along with the parameters set out by the problem ([1] "m_unitCost", "se_unitCost"; [2] "m_marketSize", "se_marketSize"). Two independent, normal distributions are created using the two separate sets of parameters, within the confines of a for-loop. Within this same for-loop, a calculation of the estimated total amount of money saved ("savings_CostxSize") may be carried out. Finally, the results of the simulations may be viewed. With consideration of the fact that there are 1000 simulations, the head() function may be used to view an extract of the results for the sake of convenience. 
+
+- An alternate version of the calculations carried out without the use of a for-loop may be viewed within the appendix.
 
 ```{r}
+
+#setting the seed for reproducibility
+set.seed(711)
 
 # setting the no. of simulations
 n_sims <- 1000
@@ -85,30 +93,31 @@ for (i in 1:n_sims) {
   savings_CostxSize[i] <- norm_unitCost * norm_marketSize
 }
 
-# viewing total savings
+# viewing (an excerpt of the) total savings
 head(savings_CostxSize)
 
-
-hist(savings_CostxSize)
+# creating a histogram to view distribution of estimated savings
+hist_CostxSavings <-
+  hist(savings_CostxSize, main = "Estimated Savings for New Product ($) Across 1000 Simulations", xlab = "Savings ($)")
 
 ```
 
 ## Question 3: ROS 5.6, Inference for a ratio of parameters (Benjamin, Mie, Paula)
 
-A (hypothetical) study compares the costs and effectiveness of two different medical treatments.
+**A (hypothetical) study compares the costs and effectiveness of two different medical treatments.**
 
-    - In the first part of the study, the difference in costs between treatments A and B is estimated at \$600 per patient, with a standard error of \$400, based on a regression with 50 degrees of freedom.
-    - In the second part of the study, the difference in effectiveness is estimated at 3.0 (on some relevant measure), with a standard error of 1.0, based on a regression with 100 degrees of freedom.
-    - For simplicity, assume that the data from the two parts of the study were collected independently.
+  * In the first part of the study, the difference in costs between treatments A and B is estimated at \$600 per patient, with a standard error of \$400, based on a regression with 50 degrees of freedom.
+  * In the second part of the study, the difference in effectiveness is estimated at 3.0 (on some relevant measure), with a standard error of 1.0, based on a regression with 100 degrees of freedom.
+  * For simplicity, assume that the data from the two parts of the study were collected independently.
 
     Inference is desired for the incremental cost-effectiveness ratio: the difference between the average costs of the two treatments, divided by the difference between their average effectiveness, a problem discussed further by Heitjan, Moskowitz, and Whang (1999).
 
-    (a) Create 1000 simulation draws of the cost difference and the effectiveness difference, and make a scatterplot of these draws.
-    (b) Use simulation to come up with an estimate, 50% interval, and 95% interval for the incremental cost-effectiveness ratio.
-    (c) Repeat, changing the standard error on the difference in effectiveness to 2.0.
+  (a) Create 1000 simulation draws of the cost difference and the effectiveness difference, and make a scatterplot of these draws.
+  (b) Use simulation to come up with an estimate, 50% interval, and 95% interval for the incremental cost-effectiveness ratio.
+  (c) Repeat, changing the standard error on the difference in effectiveness to 2.0.
 
 ---
-a) 
+##### **a) Benjamin**
    first we made a function for the simulations, which then was called 1000 times via a for loop, then the cost and effectiveness differences are made into a dataframe and then plotted as a scatterplot
 
 ```{r thirdPart_Benjamin_a}
@@ -118,12 +127,9 @@ a)
 ## 1) create 1000 simulations draws of the cost difference and effectiveness difference by making a function
 set.seed(123) # sets the seed so we could compare a) and c)
 
-print(rnorm(2, mean = costDiff_mean, sd = costDiff_se))
-
 # declare variables
 costDiff_sim = c()
 effDiff_sim = c()
-
 
 costDiff_se = 400
 effDiff_se = 1
@@ -131,7 +137,7 @@ effDiff_se = 1
 costDiff_mean = 600
 effDiff_mean = 3
 
-
+print(rnorm(2, mean = costDiff_mean, sd = costDiff_se))
 
 # function simulating the estimates of the cost and effectiveness differences
 costDiff_simulator <- function()
@@ -148,67 +154,46 @@ costDiff_simulator <- function()
 
 # for loop runing the function 1000 times and saves the estimates of the cost and effectiveness differences in a vector each
 for (i in 1:1000)
-  {
+{
   simulations <- costDiff_simulator()
   costDiff_sim[i] <- simulations[1]
   effDiff_sim[i] <- simulations[2]
-  }
-
+}
 
 # 2) creates a dataframe with the cost and effectiveness differences to use for plotting
-data <- data.frame(
-  x_costDiff = costDiff_sim, # the x values are the cost differences
-  y_effDiff = effDiff_sim  # the y values are the effectiveness differences
-)
-
+data <- data.frame(x_costDiff = costDiff_sim, # the x values are the cost differences
+                   y_effDiff = effDiff_sim)  # the y values are the effectiveness differences)
 
 # plots a scatterplot of the cost and effectiveness differences
 ggplot(data, aes(x = x_costDiff)) +
   geom_point(aes(y = y_effDiff), alpha = 0.6, color = 'red') +  # Plotting the data points
-  labs(
-    x = 'Differences in cost per patient',
-    y = "Differences in effectiveness",
-    title = 'Costs and effectiveness differences between 2 medical treatments',
-  ) +
+  labs(x = 'Differences in Cost per Patient (units of money)',
+       y = "Differences in Effectiveness",
+       title = 'Costs and Effectiveness Differences Between 2 Medical Treatments',) +
   theme_minimal()
-
-
 
 ```
 
-b)
+##### **b) Mie**
    firstly the estimate, the mean, of the incremental cost-effectiveness ratio is calculated. Then its se is calculated based on the relative standard error of the estimates for the cost and effectiveness differences, which is then used to get the 50% and 95% confidence interval.
-
-
 
 ```{r thirdPart_Mie_b}
 
 ### b)
 
-
 ## 1) the incremental cost-effectiveness ratio is calculated based on the simulations from a)
-
 ratioCostEff = costDiff_sim/effDiff_sim
-
 #print(ratioCostEff)
 
-
 ## 2) the mean (the estimate) is found of the incremental cost-effectiveness ratio 
-
 ratioCostEff_estimate = mean(ratioCostEff)
-
-
 
 ## 3) calculates the standard error of the estimate and uses it for making the 50% and 95% confidence interval for the incremental cost-effectiveness ratio
 
-
 # finds the relative SE of the cost and the effectiveness differences
-
 relativeSE_cost = costDiff_se/mean(costDiff_sim)
 
 relativeSE_eff = effDiff_se/mean(effDiff_sim)
-
-
 
 # calculates the se of the estimate
 ratioCostEff_se = ratioCostEff_estimate * sqrt(relativeSE_cost^2+relativeSE_eff^2)
@@ -217,34 +202,24 @@ ratioCostEff_se = ratioCostEff_estimate * sqrt(relativeSE_cost^2+relativeSE_eff^
 
       # AND the sqrt() and ^2 is basically for making sure that the se is not negative
 
-
-
-
 # calculates the 50% CI
-
 startCI_50 = round( ratioCostEff_estimate - (2/3) * ratioCostEff_se, 2)
 
 endCI_50 = round(ratioCostEff_estimate + (2/3) * ratioCostEff_se, 2)
 
 CI_50 = print(paste("the 50% confidence interval is [", startCI_50, ", ", endCI_50, "]"))
 
-
-
-
 # calculates the 95% CI
-
 startCI_95 = round( ratioCostEff_estimate - 2 * ratioCostEff_se, 2)
 
 endCI_95 = round( ratioCostEff_estimate + 2 * ratioCostEff_se, 2)
 
 CI_95 = print(paste("the 95% confidence interval is [", startCI_95, ", ", endCI_95, "]"))
 
-
-
 ```
 
 
-c)
+##### **c) Paula**
    the standard error on the difference in effectiveness is changed from 1 to 2.
         then the code is as for a) and b)
 
@@ -255,17 +230,11 @@ set.seed(123) # sets the seed so we could compare a) and c)
 
 effDiff_se = 2  # sets the new standard error of the differences in effectiveness
 
-
-
 ## 1) the a) part of the code - making the simulations for the estimates for cost and effectiveness differences and plotting them as a scatterplot
-
 
 # resets the vectors variables
 costDiff_sim = c()
 effDiff_sim = c()
-
-
-
 
 # function simulating the estimates of the cost and effectiveness differences
 costDiff_simulator <- function()
@@ -280,101 +249,73 @@ costDiff_simulator <- function()
   
 }
 
-
 # for loop runing the function 1000 times and saves the estimates of the cost and effectiveness differences in a vector each
 for (i in 1:1000)
-  {
+{
   simulations <- costDiff_simulator()
   costDiff_sim[i] <- simulations[1]
   effDiff_sim[i] <- simulations[2]
-  }
-
+}
 
 # creates a dataframe with the cost and effectiveness differences to use for plotting
-data <- data.frame(
-  x_costDiff = costDiff_sim, # the x values are the cost differences
-  y_effDiff = effDiff_sim  # the y values are the effectiveness differences
-)
+data <- data.frame(x_costDiff = costDiff_sim, # the x values are the cost differences
+                   y_effDiff = effDiff_sim)  # the y values are the effectiveness differences)
 
 # plots a scatterplot of the cost and effectiveness differences
 ggplot(data, aes(x = x_costDiff)) +
   geom_point(aes(y = y_effDiff), alpha = 0.6, color = 'red') +  # Plotting the data points
-  labs(
-    x = 'Differences in cost per patient',
-    y = "Differences in effectiveness",
-    title = 'Costs and effectiveness differences between 2 medical treatments',
-  ) +
+  labs(x = 'Differences in Cost per Patient (units of money)',
+       y = "Differences in Effectiveness",
+       title = 'Costs and Effectiveness Differences Between 2 Medical Treatments',) +
   theme_minimal()
 
-
-
-
-
-
 ## 2) the b) part of the code - calculating an estimate of the incremental cost-effectiveness ratio. Then the standard error used for the 50% and 95% confidence interval
-
 
 ## the incremental cost-effectiveness ratio is calculated based on the simulations from a)
 ratioCostEff = costDiff_sim/effDiff_sim
 
-
 ## the mean (the estimate) is found of the incremental cost-effectiveness ratio 
 ratioCostEff_estimate = mean(ratioCostEff)
 
-
-
 ## calculates the standard error of the estimate and uses it for making the 50% and 95% confidence interval for the incremental cost-effectiveness ratio
 
-
 # finds the relative SE of the cost and the effectiveness differences
-
 relativeSE_cost = costDiff_se/mean(costDiff_sim)
 
 relativeSE_eff = effDiff_se/mean(effDiff_sim)
 
-
-
 # calculates the se of the estimate
 ratioCostEff_se = ratioCostEff_estimate * sqrt(relativeSE_cost^2+relativeSE_eff^2)
 
-
-
-
 # calculates the 50% CI
-
 startCI_50 = round( ratioCostEff_estimate - (2/3) * ratioCostEff_se, 2)
 
 endCI_50 = round(ratioCostEff_estimate + (2/3) * ratioCostEff_se, 2)
 
 CI_50 = print(paste("the 50% confidence interval is [", startCI_50, ", ", endCI_50, "]"))
 
-
-
 # calculates the 95% CI
+startCI_95 = round(ratioCostEff_estimate - 2 * ratioCostEff_se, 2)
 
-startCI_95 = round( ratioCostEff_estimate - 2 * ratioCostEff_se, 2)
-
-endCI_95 = round( ratioCostEff_estimate + 2 * ratioCostEff_se, 2)
+endCI_95 = round(ratioCostEff_estimate + 2 * ratioCostEff_se, 2)
 
 CI_95 = print(paste("the 95% confidence interval is [", startCI_95, ", ", endCI_95, "]"))
 
-
-
 ```
 
-Conclusion (*written in French*):
+#### Conclusion (*written in French*):
 
   Alors (*'so' written in French*) as the SE of effectiveness differences has doubled (from 1 to 2), the intervals* for the incremental cost-effectiveness ratio has also become wider because of it.
   
   * we expect that you mean confidence intervals, but it was not specified to our great dismay
 
-##APPENDIX 
+## APPENDIX 
 
-###APPENDIX (Q2, 5.6)
+### APPENDIX (Q2, 5.6)
 ```{r secondpart_withotLoopAndFunctions}
 
 # storing results, simulating cost savings + market size
-norm_unitCost <- 
+norm_unitCost <-
   rnorm(n_sims, mean = m_unitCost, sd = se_unitCost) # [1]
 norm_marketSize <-
   rnorm(n_sims, mean = m_marketSize, sd = se_marketSize) # [2]
@@ -385,8 +326,9 @@ head(savings_CostxSize_2)
 
 ```
 
-###APPENDIX (Q3, 5.10)
+### APPENDIX (Q3, 5.10)
 ```{r thirdpart_withotLoopAndFunctions}
+
 # Set seed for reproducibility
 set.seed(123)
 
@@ -397,12 +339,20 @@ num_simulations <- 1000
 cost_difference <- rnorm(num_simulations, mean = 600, sd = 400)
 
 # Generate random draws for the cost difference
-effectiveness_difference <- rnorm(num_simulations, mean = 3.0, sd = 1.0)
+effectiveness_difference <-
+  rnorm(num_simulations, mean = 3.0, sd = 1.0)
 
 # Create scatterplot
-plot(cost_difference, effectiveness_difference, 
-     xlab = "Cost Difference ($)", ylab = "Effectiveness Difference",
-     main = "Cost Difference vs Effectiveness Difference",
-     pch = 20, col = "darkblue")
+plot(
+  cost_difference,
+  effectiveness_difference,
+  xlab = "Cost Difference ($)",
+  ylab = "Effectiveness Difference",
+  main = "Cost Difference vs Effectiveness Difference",
+  pch = 20,
+  col = "darkblue"
+)
+
 ```
+
 
