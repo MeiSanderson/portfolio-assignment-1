@@ -174,7 +174,7 @@ ggplot(data, aes(x = x_costDiff)) +
 ```
 
 ##### **b) Mie**
-   firstly the estimate, the mean, of the incremental cost-effectiveness ratio is calculated. Then its se is calculated based on the relative standard error of the estimates for the cost and effectiveness differences, which is then used to get the 50% and 95% confidence interval.
+   firstly the estimate, the mean, of the incremental cost-effectiveness ratio is calculated. Then the percentiles (50 & 95% of the distribution of the simulated  incremental cost-effectiveness ratio are found.
 
 ```{r thirdPart_Mie_b}
 
@@ -182,40 +182,32 @@ ggplot(data, aes(x = x_costDiff)) +
 
 ## 1) the incremental cost-effectiveness ratio is calculated based on the simulations from a)
 ratioCostEff = costDiff_sim/effDiff_sim
-#print(ratioCostEff)
+
 
 ## 2) the mean (the estimate) is found of the incremental cost-effectiveness ratio 
 ratioCostEff_estimate = mean(ratioCostEff)
 
-## 3) calculates the standard error of the estimate and uses it for making the 50% and 95% confidence interval for the incremental cost-effectiveness ratio
+# prints the estimate
+print(paste("The estimate, aka the mean of the incremental cost-effectiveness ratio, was calculated, which given the seed we previously set is approximately of ", round(ratioCostEff_estimate, digits = 2), ". In other words, to move up a unit of effectiveness the cost is on average raised by", round(ratioCostEff_estimate, digits = 2), "units of the given currency."))
 
-# finds the relative SE of the cost and the effectiveness differences
-relativeSE_cost = costDiff_se/mean(costDiff_sim)
 
-relativeSE_eff = effDiff_se/mean(effDiff_sim)
+## 3) computes the corresponding percentiles (50% and 95%)
+percentilesICER <- quantile(ratioCostEff, probs = c(0.5, 0.95))
 
-# calculates the se of the estimate
-ratioCostEff_se = ratioCostEff_estimate * sqrt(relativeSE_cost^2+relativeSE_eff^2)
 
-      # multiplication makes the SE appropriately scaled relative to the estimate (ratioCostEff_estimate)
+# inspecting the distribution of these simulated incremental cost-effectiveness ratios
+ #plot(ratioCostEff)
+ #hist(ratioCostEff)
 
-      # AND the sqrt() and ^2 is basically for making sure that the se is not negative
 
-# calculates the 50% CI
-startCI_50 = round( ratioCostEff_estimate - (2/3) * ratioCostEff_se, 2)
+# prints the percentiles
+print(paste("the 50% percentile, the median of the incremental cost-effectiveness ratio, is approximately: ", round(percentilesICER[1], digits = 2)))
 
-endCI_50 = round(ratioCostEff_estimate + (2/3) * ratioCostEff_se, 2)
+print(paste("the 95% percentile, the value which 95% of the data falls beneath, is approximately: ", round(percentilesICER[2], digits = 2)))
 
-CI_50 = print(paste("the 50% confidence interval is [", startCI_50, ", ", endCI_50, "]"))
-
-# calculates the 95% CI
-startCI_95 = round( ratioCostEff_estimate - 2 * ratioCostEff_se, 2)
-
-endCI_95 = round( ratioCostEff_estimate + 2 * ratioCostEff_se, 2)
-
-CI_95 = print(paste("the 95% confidence interval is [", startCI_95, ", ", endCI_95, "]"))
 
 ```
+
 
 
 ##### **c) Paula**
@@ -268,45 +260,41 @@ ggplot(data, aes(x = x_costDiff)) +
        title = 'Costs and Effectiveness Differences Between 2 Medical Treatments',) +
   theme_minimal()
 
+
+
 ## 2) the b) part of the code - calculating an estimate of the incremental cost-effectiveness ratio. Then the standard error used for the 50% and 95% confidence interval
 
 ## the incremental cost-effectiveness ratio is calculated based on the simulations from a)
-ratioCostEff = costDiff_sim/effDiff_sim
+ratioCostEff_new = costDiff_sim/effDiff_sim
 
 ## the mean (the estimate) is found of the incremental cost-effectiveness ratio 
-ratioCostEff_estimate = mean(ratioCostEff)
+ratioCostEff_estimate_new = mean(ratioCostEff_new)
 
-## calculates the standard error of the estimate and uses it for making the 50% and 95% confidence interval for the incremental cost-effectiveness ratio
 
-# finds the relative SE of the cost and the effectiveness differences
-relativeSE_cost = costDiff_se/mean(costDiff_sim)
+# prints the estimate
+print(paste("The estimate, aka the mean of the incremental cost-effectiveness ratio, was calculated, which given the seed we previously set is approximately of ", round(ratioCostEff_estimate_new, digits = 2), "." ))
 
-relativeSE_eff = effDiff_se/mean(effDiff_sim)
 
-# calculates the se of the estimate
-ratioCostEff_se = ratioCostEff_estimate * sqrt(relativeSE_cost^2+relativeSE_eff^2)
+## computes the corresponding percentiles (50% and 95%)
+percentilesICER_new <- quantile(ratioCostEff_new, probs = c(0.5, 0.95))
 
-# calculates the 50% CI
-startCI_50 = round( ratioCostEff_estimate - (2/3) * ratioCostEff_se, 2)
 
-endCI_50 = round(ratioCostEff_estimate + (2/3) * ratioCostEff_se, 2)
+# inspecting the distribution of these simulated incremental cost-effectiveness ratios
+ #plot(ratioCostEff_new)
+ #hist(ratioCostEff_new)
 
-CI_50 = print(paste("the 50% confidence interval is [", startCI_50, ", ", endCI_50, "]"))
 
-# calculates the 95% CI
-startCI_95 = round(ratioCostEff_estimate - 2 * ratioCostEff_se, 2)
+# prints the percentiles
+print(paste("the 50% percentile, the median of the incremental cost-effectiveness ratio, is approximately: ", round(percentilesICER_new[1], digits = 2)))
 
-endCI_95 = round(ratioCostEff_estimate + 2 * ratioCostEff_se, 2)
+print(paste("the 95% percentile, the value which 95% of the data (when the se is raised from 1 to 2) falls beneath, is approximately: ", round(percentilesICER_new[2], digits = 2)))
 
-CI_95 = print(paste("the 95% confidence interval is [", startCI_95, ", ", endCI_95, "]"))
 
 ```
 
 #### Conclusion (*written in French*):
 
-  Alors (*'so' written in French*) as the SE of effectiveness differences has doubled (from 1 to 2), the intervals* for the incremental cost-effectiveness ratio has also become wider because of it.
-  
-  * we expect that the book means confidence intervals, but it was not specified to our great dismay
+  Alors (*'so' written in French*) as the SE of effectiveness differences has doubled (from 1 to 2), the 95% percentile value has moved further away from the mean and the median (50% percentile) as by raising the standard error, the spread of the simulated data points has become wider leading.
 
 \newpage
 
